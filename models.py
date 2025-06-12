@@ -48,7 +48,7 @@ class Event(db.Model):
 
     # Foreign Keys
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
-    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # created by admin
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # created by admin
 
     # Relationships
     registrations = db.relationship('EventRegistration', backref='event', lazy=True)
