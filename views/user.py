@@ -4,7 +4,7 @@ from models import db, User
 user_bp = Blueprint("user_bp", __name__)
 
 # Create a new user (register)
-@user_bp.route('', methods=['POST'])
+@user_bp.route('/', methods=['POST'])
 def create_user():
     data = request.get_json()
     name = data.get('name')
@@ -24,7 +24,7 @@ def create_user():
     return jsonify({'success': 'User registered successfully'}), 201
 
 # Get all users
-@user_bp.route('', methods=['GET'])
+@user_bp.route('/', methods=['GET'])
 def get_users():
     users = User.query.all()
     user_list = []

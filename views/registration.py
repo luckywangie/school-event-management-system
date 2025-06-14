@@ -87,7 +87,6 @@ def get_registrations_by_user(user_id):
 
 
 #LIST participants for a specific EVENT  
-
 @registration_bp.route("/events/<int:event_id>", methods=["GET"])
 def get_registrations_by_event(event_id):
     event = Event.query.get(event_id)
@@ -98,7 +97,11 @@ def get_registrations_by_event(event_id):
     for r in event.registrations:
         participants.append({
             "registration_id": r.id,
-            "user_id": r.user_id,
-            "registered_at": r.registered_at
+            "registered_at": r.registered_at,
+            "user": {
+                "id": r.user.id,
+                "name": r.user.name,
+                "email": r.user.email
+            }
         })
     return jsonify(participants), 200
