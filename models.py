@@ -2,25 +2,23 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import MetaData
 
-metadata =  MetaData()
-
+metadata = MetaData()
 db = SQLAlchemy(metadata=metadata)
 
 class User(db.Model):
-      __tablename__ = 'users'
+    __tablename__ = 'users'
     
-      id = db.Column(db.Integer, primary_key=True)
-      name = db.Column(db.String(100), nullable=False)
-      email = db.Column(db.String(100), nullable=False, unique=True)
-      password = db.Column(db.String(200), nullable=False)
-      is_admin = db.Column(db.Boolean, default=False)
-      is_active = db.Column(db.Boolean, default=True)
-      created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(200), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-      created_events = db.relationship('Event', backref='creator', lazy=True)
-      registrations = db.relationship('EventRegistration', backref='user', lazy=True)
-
+    created_events = db.relationship('Event', back_populates='creator', lazy=True)
+    registrations = db.relationship('EventRegistration', back_populates='user', lazy=True)
 
 
 class Category(db.Model):
@@ -32,7 +30,7 @@ class Category(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    events = db.relationship('Event', backref='category', lazy=True)
+    events = db.relationship('Event', back_populates='category', lazy=True)
 
 
 class Event(db.Model):
@@ -48,10 +46,12 @@ class Event(db.Model):
 
     # Foreign Keys
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
-    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # created by admin
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     # Relationships
-    registrations = db.relationship('EventRegistration', backref='event', lazy=True)
+    category = db.relationship('Category', back_populates='events', lazy=True)
+    creator = db.relationship('User', back_populates='created_events', lazy=True)
+    registrations = db.relationship('EventRegistration', back_populates='event', lazy=True)
 
 
 class EventRegistration(db.Model):
@@ -63,8 +63,8 @@ class EventRegistration(db.Model):
     registered_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    user = db.relationship('User', backref='event_registrations', lazy=True)
-    event = db.relationship('Event', backref='event_registrations', lazy=True)
+    user = db.relationship('User', back_populates='registrations', lazy=True)
+    event = db.relationship('Event', back_populates='registrations', lazy=True)
 
     # Prevent duplicate registration
     __table_args__ = (
