@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 flask-mail = "*"
+flask-jwt-extended = "*"
+werkzeug = "*"
 
 [dev-packages]
 

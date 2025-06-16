@@ -6,6 +6,10 @@ from views.user import user_bp
 from views.event import event_bp
 from views.registration import registration_bp
 from views.category import category_bp
+from views.auth import auth_bp
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
+
 
 app = Flask(__name__)
 
@@ -29,11 +33,20 @@ migrate = Migrate(app, db)
 mail = Mail()
 mail.init_app(app)
 
+#JWT
+app.config["JWT_SECRET_KEY"] = "gftsdfjjjdsefghiuygv" #change this
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2)
+jwt = JWTManager(app)
+jwt.init_app(app)
+
+
+
 # Register Blueprints
 app.register_blueprint(user_bp, url_prefix='/users')
 app.register_blueprint(event_bp, url_prefix='/events')
 app.register_blueprint(registration_bp, url_prefix='/registrations')
 app.register_blueprint(category_bp, url_prefix='/categories')
+app.register_blueprint(auth_bp, url_prefix='/auth')
 
 if __name__ == "__main__":
     app.run(debug=True)

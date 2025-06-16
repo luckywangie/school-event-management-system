@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_mail import Message
 from models import db, User
+from werkzeug.security import generate_password_hash
 
 user_bp = Blueprint("user_bp", __name__)
 
@@ -27,7 +28,6 @@ def send_email_to_any_email():
 
 
 # Create a new user
-
 @user_bp.route('/', methods=['POST'])
 def create_user():
     data = request.get_json()
@@ -35,15 +35,31 @@ def create_user():
     email = data.get('email')
     password = data.get('password')
 
+    # Validate input
     if not name or not email or not password:
         return jsonify({'error': 'All fields are required'}), 400
 
+    # Check for existing user
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email already exists'}), 400
 
-    user = User(name=name, email=email, password=password)
+    # Create new user
+    user = User(
+        name=name,
+        email=email,
+        password=generate_password_hash(password)
+    )
     db.session.add(user)
     db.session.commit()
+
+    return jsonify({
+        'message': 'User created successfully',
+        'user': {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email
+        }
+    }), 201
 
 # Get all users
 
