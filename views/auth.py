@@ -1,7 +1,12 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, User  # noqa: F401
+from models import db, User, TokenBlocklist # noqa: F401
+from datetime import datetime, timezone
+from flask_jwt_extended import get_jwt
+
+
+
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -40,4 +45,17 @@ def fetch_current_user():
         "created_at": user.created_at
     }), 200
 
-#
+#logout
+@auth_bp.route("/logout", methods=["DELETE"])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    now = datetime.now(timezone.utc)
+
+    new_blocked_token = TokenBlocklist(jti=jti, created_at=now)
+    db.session.add(new_blocked_token)
+    db.session.commit()
+
+    return jsonify({"success": "Successfully logged out"}), 200
+
+

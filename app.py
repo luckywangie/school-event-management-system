@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_mail import Mail
-from models import db
+from models import db, TokenBlocklist
 from views.user import user_bp
 from views.event import event_bp
 from views.registration import registration_bp
@@ -10,6 +10,7 @@ from views.auth import auth_bp
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_cors import CORS
+
 
 app = Flask(__name__)
 
@@ -25,6 +26,11 @@ app.config["MAIL_USE_SSL"] = False
 app.config['MAIL_USERNAME'] = 'devworkzzy@gmail.com'
 app.config['MAIL_PASSWORD'] = 'ikdd hmwo zphg bvws'
 app.config['MAIL_DEFAULT_SENDER'] = 'contact us.eventbright@gmail.com'
+
+#jwt blacklist config
+app.config["JWT_BLACKLIST_ENABLED"] = True
+app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = ["access"]
+
 
 # Initialize extensions
 db.init_app(app)
@@ -57,3 +63,9 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+#check if token is revocked
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload):
+    jti = jwt_payload["jti"]
+    return TokenBlocklist.query.filter_by(jti=jti).first() is not None
