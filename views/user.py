@@ -34,32 +34,31 @@ def create_user():
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
+    is_admin = data.get('is_admin', False)  # ✅ default to False
 
-    # Validate input
     if not name or not email or not password:
         return jsonify({'error': 'All fields are required'}), 400
 
-    # Check for existing user
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email already exists'}), 400
 
-    # Create new user
     user = User(
         name=name,
         email=email,
-        password=generate_password_hash(password)
+        password=generate_password_hash(password),
+        is_admin=is_admin  # ✅ assign the flag
     )
+
     db.session.add(user)
     db.session.commit()
 
     return jsonify({
-        'message': 'User created successfully',
-        'user': {
-            'id': user.id,
-            'name': user.name,
-            'email': user.email
-        }
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "is_admin": user.is_admin
     }), 201
+
 
 # Get all users
 
@@ -99,22 +98,56 @@ def get_user(user_id):
 
 
 # Update user
-
-@user_bp.route('/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    user = User.query.get(user_id)
+@user_bp.route('/<int:id>', methods=['PUT'])
+def update_user(id):
+    user = User.query.get(id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
-    user.name = data.get('name', user.name)
-    user.email = data.get('email', user.email)
-    user.password = data.get('password', user.password)
+
+    print("Raw data received:", data)
+
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    is_admin = data.get('is_admin')
+    is_active = data.get('is_active')
+
+    if name:
+        user.name = name
+
+    if email:
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user and existing_user.id != user.id:
+            return jsonify({'error': 'Email already in use'}), 400
+        user.email = email
+
+    if password:
+        user.password = generate_password_hash(password)
+
+    # Handle booleans explicitly
+    if is_admin is not None:
+        print("Before update is_admin:", user.is_admin)
+        user.is_admin = str(is_admin).lower() in ['true', '1']
+        print("After update is_admin:", user.is_admin)
+
+    if is_active is not None:
+        user.is_active = str(is_active).lower() in ['true', '1']
+
     db.session.commit()
 
-    return jsonify({'success': 'User updated'}), 200
-
-
+    return jsonify({
+        'message': 'User updated successfully',
+        'user': {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'is_admin': user.is_admin,
+            'is_active': user.is_active,
+            'created_at': user.created_at
+        }
+    }), 200
 
 # Delete user
 
