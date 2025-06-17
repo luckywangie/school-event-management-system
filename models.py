@@ -20,6 +20,14 @@ class User(db.Model):
     created_events = db.relationship('Event', back_populates='creator', lazy=True)
     registrations = db.relationship('EventRegistration', back_populates='user', lazy=True)
 
+#TokenBlocklist to store revocked JWT tockens
+class TokenBlocklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
