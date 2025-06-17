@@ -17,8 +17,19 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    created_events = db.relationship('Event', back_populates='creator', lazy=True)
-    registrations = db.relationship('EventRegistration', back_populates='user', lazy=True)
+    created_events = db.relationship(
+        'Event',
+        back_populates='creator',
+        cascade='all, delete-orphan',
+        lazy=True
+    )
+
+    registrations = db.relationship(
+        'EventRegistration',
+        back_populates='user',
+        lazy=True
+    )
+
 
 #TokenBlocklist to store revocked JWT tockens
 class TokenBlocklist(db.Model):

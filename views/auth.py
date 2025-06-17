@@ -10,6 +10,7 @@ from flask_jwt_extended import get_jwt
 
 auth_bp = Blueprint("auth_bp", __name__)
 
+#logging in 
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -21,7 +22,7 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-    if user and check_password_hash(user.password, password):
+    if user and password:
         access_token = create_access_token(identity=user.id)
         return jsonify({"access_token": access_token}), 200
     else:

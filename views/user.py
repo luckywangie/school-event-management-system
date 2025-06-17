@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash
 
 user_bp = Blueprint("user_bp", __name__)
 
+
+# Send a welcome email to any email
 @user_bp.route('/send-email', methods=['POST'])
 def send_email_to_any_email():
     from app import mail  
@@ -32,9 +34,9 @@ def send_email_to_any_email():
 def create_user():
     data = request.get_json()
     name = data.get('name')
-    email = data.get('email')
+    email = data.get('email', '').strip().lower()
     password = data.get('password')
-    is_admin = data.get('is_admin', False)  # ✅ default to False
+    is_admin = data.get('is_admin', False)
 
     if not name or not email or not password:
         return jsonify({'error': 'All fields are required'}), 400
@@ -42,11 +44,13 @@ def create_user():
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email already exists'}), 400
 
+    hashed_password = generate_password_hash(password)
+
     user = User(
         name=name,
         email=email,
-        password=generate_password_hash(password),
-        is_admin=is_admin  # ✅ assign the flag
+        password=hashed_password,
+        is_admin=is_admin
     )
 
     db.session.add(user)
@@ -61,7 +65,6 @@ def create_user():
 
 
 # Get all users
-
 @user_bp.route('/', methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -77,9 +80,7 @@ def get_users():
     return jsonify(user_list), 200
 
 
-
 # Get user by ID
-
 @user_bp.route('/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.query.get(user_id)
@@ -96,8 +97,7 @@ def get_user(user_id):
     }), 200
 
 
-
-# Update user
+# Update user (hashes password if updated)
 @user_bp.route('/<int:id>', methods=['PUT'])
 def update_user(id):
     user = User.query.get(id)
@@ -105,8 +105,6 @@ def update_user(id):
         return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
-
-    print("Raw data received:", data)
 
     name = data.get('name')
     email = data.get('email')
@@ -118,19 +116,21 @@ def update_user(id):
         user.name = name
 
     if email:
+        email = email.strip().lower()
         existing_user = User.query.filter_by(email=email).first()
         if existing_user and existing_user.id != user.id:
             return jsonify({'error': 'Email already in use'}), 400
         user.email = email
 
     if password:
-        user.password = generate_password_hash(password)
+        # Avoid double hashing if already hashed (just in case)
+        if not password.startswith('$pbkdf2:'):
+            user.password = generate_password_hash(password)
+        else:
+            user.password = password
 
-    # Handle booleans explicitly
     if is_admin is not None:
-        print("Before update is_admin:", user.is_admin)
         user.is_admin = str(is_admin).lower() in ['true', '1']
-        print("After update is_admin:", user.is_admin)
 
     if is_active is not None:
         user.is_active = str(is_active).lower() in ['true', '1']
@@ -149,8 +149,8 @@ def update_user(id):
         }
     }), 200
 
-# Delete user
 
+# Delete user
 @user_bp.route('/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     user = User.query.get(user_id)
@@ -159,4 +159,5 @@ def delete_user(user_id):
 
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'success': 'User deleted'}), 200
+
+    return jsonify({'success': 'User and their events deleted'}), 200
