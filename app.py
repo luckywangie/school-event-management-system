@@ -9,7 +9,7 @@ from views.category import category_bp
 from views.auth import auth_bp
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
-
+from flask_cors import CORS
 
 app = Flask(__name__)
 
@@ -33,6 +33,9 @@ migrate = Migrate(app, db)
 mail = Mail()
 mail.init_app(app)
 
+#cors
+CORS(app)
+
 #JWT
 app.config["JWT_SECRET_KEY"] = "gftsdfjjjdsefghiuygv" #change this
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2)
@@ -41,6 +44,8 @@ jwt.init_app(app)
 
 #test
 app.config["JWT_VERIFY_SUB"] = False
+
+
 
 
 # Register Blueprints
