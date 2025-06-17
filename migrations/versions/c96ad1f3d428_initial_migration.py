@@ -1,8 +1,8 @@
-"""initial migration
+"""Initial migration
 
-Revision ID: 56897d003df0
+Revision ID: c96ad1f3d428
 Revises: 
-Create Date: 2025-06-12 12:52:04.996883
+Create Date: 2025-06-17 17:18:16.288656
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '56897d003df0'
+revision = 'c96ad1f3d428'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +26,15 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
+    op.create_table('token_blocklist',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('jti', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('token_blocklist', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_token_blocklist_jti'), ['jti'], unique=False)
+
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
@@ -69,5 +78,9 @@ def downgrade():
     op.drop_table('event_registrations')
     op.drop_table('events')
     op.drop_table('users')
+    with op.batch_alter_table('token_blocklist', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_token_blocklist_jti'))
+
+    op.drop_table('token_blocklist')
     op.drop_table('categories')
     # ### end Alembic commands ###
