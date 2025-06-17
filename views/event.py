@@ -1,12 +1,20 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Event, Category, User
 
 event_bp = Blueprint("event_bp", __name__)
 
 
-# CREATE an event
+# CREATE an event (admin only)
 @event_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_event():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user or not user.is_admin:
+        return jsonify({"error": "Unauthorized: Admins only"}), 403
+
     data = request.get_json()
     title = data.get("title")
     description = data.get("description")
@@ -14,18 +22,10 @@ def create_event():
     location = data.get("location")
     capacity = data.get("capacity")
     category_id = data.get("category_id")
-    created_by = data.get("created_by")  # admin user ID
 
-    # Validates the required fields
-    if not all([title, description, date, location, capacity, category_id, created_by]):
+    if not all([title, description, date, location, capacity, category_id]):
         return jsonify({"error": "All fields are required"}), 400
 
-    # Validates if creator is an admin
-    creator = User.query.get(created_by)
-    if not creator or not creator.is_admin:
-        return jsonify({"error": "Invalid or unauthorized admin"}), 403
-
-    # Validate category
     category = Category.query.get(category_id)
     if not category:
         return jsonify({"error": "Invalid category"}), 404
@@ -37,7 +37,7 @@ def create_event():
         location=location,
         capacity=capacity,
         category_id=category_id,
-        created_by=created_by
+        created_by=user.id
     )
 
     db.session.add(event)
@@ -95,9 +95,16 @@ def get_event_by_id(event_id):
     }), 200
 
 
-# UPDATE an event
+# UPDATE an event (admin only)
 @event_bp.route("/<int:event_id>", methods=["PUT", "PATCH"])
+@jwt_required()
 def update_event(event_id):
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user or not user.is_admin:
+        return jsonify({"error": "Unauthorized: Admins only"}), 403
+
     event = Event.query.get(event_id)
     if not event:
         return jsonify({"error": "Event not found"}), 404
@@ -123,9 +130,16 @@ def update_event(event_id):
     }), 200
 
 
-# DELETE an event
+# DELETE an event (admin only)
 @event_bp.route("/<int:event_id>", methods=["DELETE"])
+@jwt_required()
 def delete_event(event_id):
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user or not user.is_admin:
+        return jsonify({"error": "Unauthorized: Admins only"}), 403
+
     event = Event.query.get(event_id)
     if not event:
         return jsonify({"error": "Event not found"}), 404
