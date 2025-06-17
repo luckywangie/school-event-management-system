@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token
-from models import db, User
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from models import db, User  # noqa: F401
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -21,3 +21,22 @@ def login():
         return jsonify({"access_token": access_token}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
+
+
+#fetching logged in user
+@auth_bp.route("/current_user", methods=["GET"])
+@jwt_required()
+def fetch_current_user():
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "is_admin": user.is_admin,
+        "is_active": user.is_active,
+        "created_at": user.created_at
+    }), 200
+

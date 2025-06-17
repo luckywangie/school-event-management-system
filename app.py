@@ -39,6 +39,8 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2)
 jwt = JWTManager(app)
 jwt.init_app(app)
 
+#test
+app.config["JWT_VERIFY_SUB"] = False
 
 
 # Register Blueprints
