@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Event, Category, User
+from datetime import datetime
 
 event_bp = Blueprint("event_bp", __name__)
 
@@ -18,22 +19,31 @@ def create_event():
     data = request.get_json()
     title = data.get("title")
     description = data.get("description")
-    date = data.get("date")
+    date_str = data.get("date")  # Date part
+    time_str = data.get("Time")  # Time part
     location = data.get("location")
     capacity = data.get("capacity")
     category_id = data.get("category_id")
 
-    if not all([title, description, date, location, capacity, category_id]):
+    if not all([title, description, date_str, time_str, location, capacity, category_id]):
         return jsonify({"error": "All fields are required"}), 400
 
     category = Category.query.get(category_id)
     if not category:
         return jsonify({"error": "Invalid category"}), 404
 
+    try:
+        # Combine the date and time to form a full datetime string
+        full_datetime_str = f"{date_str}T{time_str}"
+        # Convert the combined string to a datetime object
+        date = datetime.fromisoformat(full_datetime_str)
+    except ValueError:
+        return jsonify({"error": "Invalid date or time format. Expected format: YYYY-MM-DD and HH:MM:SS"}), 400
+
     event = Event(
         title=title,
         description=description,
-        date=date,
+        date=date,  # Use the combined datetime object
         location=location,
         capacity=capacity,
         category_id=category_id,
@@ -53,7 +63,6 @@ def create_event():
         "category_id": event.category_id,
         "created_by": event.created_by
     }), 201
-
 
 # GET all events
 @event_bp.route("/", methods=["GET"])
