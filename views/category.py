@@ -21,7 +21,6 @@ def create_category():
     if not name:
         return jsonify({"error": "Category name is required"}), 400
 
-    # Check if category already exists
     existing = Category.query.filter_by(name=name).first()
     if existing:
         return jsonify({"error": "Category already exists"}), 409
@@ -31,10 +30,12 @@ def create_category():
     db.session.commit()
 
     return jsonify({
-        "message": "Category created successfully",
-        "id": new_category.id,
-        "name": new_category.name,
-        "description": new_category.description
+        "success": "Category created successfully",
+        "category": {
+            "id": new_category.id,
+            "name": new_category.name,
+            "description": new_category.description
+        }
     }), 201
 
 
@@ -43,13 +44,16 @@ def create_category():
 def get_categories():
     categories = Category.query.all()
 
-    return jsonify([
-        {
-            "id": c.id,
-            "name": c.name,
-            "description": c.description
-        } for c in categories
-    ]), 200
+    return jsonify({
+        "success": "Categories fetched successfully",
+        "categories": [
+            {
+                "id": c.id,
+                "name": c.name,
+                "description": c.description
+            } for c in categories
+        ]
+    }), 200
 
 
 # GET one category by ID (open to everyone)
@@ -60,9 +64,12 @@ def get_category_by_id(id):
         return jsonify({"error": "Category not found"}), 404
 
     return jsonify({
-        "id": category.id,
-        "name": category.name,
-        "description": category.description
+        "success": "Category fetched successfully",
+        "category": {
+            "id": category.id,
+            "name": category.name,
+            "description": category.description
+        }
     }), 200
 
 
@@ -87,10 +94,12 @@ def update_category(id):
     db.session.commit()
 
     return jsonify({
-        "message": "Category updated successfully",
-        "id": category.id,
-        "name": category.name,
-        "description": category.description
+        "success": "Category updated successfully",
+        "category": {
+            "id": category.id,
+            "name": category.name,
+            "description": category.description
+        }
     }), 200
 
 

@@ -1,16 +1,13 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, User, TokenBlocklist # noqa: F401
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+from models import db, User, TokenBlocklist
 from datetime import datetime, timezone
-from flask_jwt_extended import get_jwt
-
-
-
 
 auth_bp = Blueprint("auth_bp", __name__)
 
-#logging in 
+
+# Logging in
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -22,14 +19,14 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-    if user and password:
+    if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=user.id)
-        return jsonify({"access_token": access_token}), 200
+        return jsonify({"success": "Login successful", "access_token": access_token}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
 
-#fetching logged in user
+# Fetching logged-in user
 @auth_bp.route("/current_user", methods=["GET"])
 @jwt_required()
 def fetch_current_user():
@@ -38,15 +35,19 @@ def fetch_current_user():
         return jsonify({"error": "User not found"}), 404
 
     return jsonify({
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "is_admin": user.is_admin,
-        "is_active": user.is_active,
-        "created_at": user.created_at
+        "success": "User fetched successfully",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "is_admin": user.is_admin,
+            "is_active": user.is_active,
+            "created_at": user.created_at
+        }
     }), 200
 
-#logout
+
+# Logout
 @auth_bp.route("/logout", methods=["DELETE"])
 @jwt_required()
 def logout():
@@ -58,5 +59,3 @@ def logout():
     db.session.commit()
 
     return jsonify({"success": "Successfully logged out"}), 200
-
-

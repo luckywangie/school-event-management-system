@@ -32,7 +32,7 @@ def create_registration():
         db.session.add(registration)
         db.session.commit()
         return jsonify({
-            "success": "User registered",
+            "success": "User registered successfully",
             "registration_id": registration.id
         }), 200
     except IntegrityError:
@@ -76,7 +76,7 @@ def get_all_registrations():
             "event_id": r.event_id,
             "registered_at": r.registered_at
         })
-    return jsonify(results), 200
+    return jsonify({"success": "All registrations fetched", "registrations": results}), 200
 
 
 # LIST registrations for a specific USER
@@ -100,7 +100,7 @@ def get_registrations_by_user(user_id):
             "event_id": r.event_id,
             "registered_at": r.registered_at
         })
-    return jsonify(results), 200
+    return jsonify({"success": "User registrations fetched", "registrations": results}), 200
 
 
 # LIST participants for a specific EVENT 
@@ -127,4 +127,4 @@ def get_registrations_by_event(event_id):
             }
         })
 
-    return jsonify(participants), 200
+    return jsonify({"success": "Event participants fetched", "participants": participants}), 200
