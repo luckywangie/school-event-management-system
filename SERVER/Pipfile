@@ -8,6 +8,7 @@ flask-mail = "*"
 flask-jwt-extended = "*"
 werkzeug = "*"
 flask-cors = "*"
+flask-migrate = "*"
 
 [dev-packages]
 

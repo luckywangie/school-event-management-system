@@ -65,7 +65,7 @@ def create_user():
             "email": user.email,
             "is_admin": user.is_admin
         }
-    }), 201
+    }), 200
 
 
 # Get all users (Admin only)
