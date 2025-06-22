@@ -7,19 +7,29 @@ const Login = () => {
   const { setCurrentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/login', {
+      const res = await fetch('http://localhost:5000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
@@ -27,23 +37,28 @@ const Login = () => {
       if (res.ok) {
         localStorage.setItem('token', data.access_token);
 
-        // Optional: Fetch user profile after login
-        const userRes = await fetch('http://localhost:5000/me', {
+        // Fetch user details
+        const userRes = await fetch('http://localhost:5000/auth/current_user', {
           headers: {
             Authorization: `Bearer ${data.access_token}`,
           },
         });
 
-        const userData = await userRes.json();
-        setCurrentUser(userData);
-        toast.success('Login successful!');
-        navigate('/events');
+        const user = await userRes.json();
+
+        if (userRes.ok) {
+          setCurrentUser(user);
+          toast.success('Login successful');
+          navigate('/');
+        } else {
+          toast.error(user.error || 'Failed to load user data');
+        }
       } else {
-        toast.error(data.error || 'Login failed');
+        toast.error(data.error || 'Invalid credentials');
       }
     } catch (err) {
       console.error(err);
-      toast.error('An error occurred');
+      toast.error('An error occurred during login');
     } finally {
       setLoading(false);
     }
@@ -57,9 +72,10 @@ const Login = () => {
           <label className="block text-sm font-medium">Email</label>
           <input
             type="email"
+            name="email"
             className="w-full px-3 py-2 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             required
           />
         </div>
@@ -68,9 +84,10 @@ const Login = () => {
           <label className="block text-sm font-medium">Password</label>
           <input
             type="password"
+            name="password"
             className="w-full px-3 py-2 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             required
           />
         </div>
