@@ -171,7 +171,7 @@ def update_user(id):
     }), 200
 
 
-# Delete user (Admin or self)
+# Delete (deactivate) user (Admin or self)
 @user_bp.route('/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
@@ -183,7 +183,7 @@ def delete_user(user_id):
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    db.session.delete(user)
+    user.is_active = False  # ✅ Soft delete
     db.session.commit()
 
-    return jsonify({'success': 'User and their events deleted'}), 200
+    return jsonify({'success': 'User deactivated'}), 200

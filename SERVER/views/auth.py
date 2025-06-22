@@ -6,9 +6,8 @@ from datetime import datetime, timezone
 
 auth_bp = Blueprint("auth_bp", __name__)
 
-
 # Logging in
-@auth_bp.route("/login", methods=["POST", "OPTIONS"])  # ✅ add OPTIONS
+@auth_bp.route("/login", methods=["POST", "OPTIONS"])
 def login():
     data = request.get_json()
     email = data.get("email")
@@ -20,14 +19,15 @@ def login():
     user = User.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password, password):
+        if not user.is_active:
+            return jsonify({"error": "Account is deactivated"}), 403
         access_token = create_access_token(identity=user.id)
         return jsonify({"success": "Login successful", "access_token": access_token}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
-
 # Fetching logged-in user
-@auth_bp.route("/current_user", methods=["GET", "OPTIONS"])  # ✅ add OPTIONS
+@auth_bp.route("/current_user", methods=["GET", "OPTIONS"])
 @jwt_required()
 def fetch_current_user():
     user = User.query.get(get_jwt_identity())
@@ -46,9 +46,8 @@ def fetch_current_user():
         }
     }), 200
 
-
 # Logout
-@auth_bp.route("/logout", methods=["DELETE", "OPTIONS"])  # ✅ add OPTIONS
+@auth_bp.route("/logout", methods=["DELETE", "OPTIONS"])
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
