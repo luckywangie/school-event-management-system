@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const EventParticipants = () => {
-  const { id } = useParams(); // Event ID
+  const { id } = useParams(); // Event ID from URL
   const [participants, setParticipants] = useState([]);
   const [eventTitle, setEventTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const EventParticipants = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const res = await fetch(`http://localhost:5000/events/${id}/participants`, {
+      const res = await fetch(`http://localhost:5000/registrations/events/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -25,8 +25,8 @@ const EventParticipants = () => {
         toast.error(data.error || 'Failed to load participants');
       }
     } catch (err) {
-      toast.error('Server error');
       console.error(err);
+      toast.error('Server error');
     } finally {
       setLoading(false);
     }
@@ -54,11 +54,11 @@ const EventParticipants = () => {
             </tr>
           </thead>
           <tbody>
-            {participants.map((user) => (
-              <tr key={user.id} className="text-center">
-                <td className="p-3 border">{user.id}</td>
-                <td className="p-3 border">{user.name}</td>
-                <td className="p-3 border">{user.email}</td>
+            {participants.map((p) => (
+              <tr key={p.user.id} className="text-center">
+                <td className="p-3 border">{p.user.id}</td>
+                <td className="p-3 border">{p.user.name}</td>
+                <td className="p-3 border">{p.user.email}</td>
               </tr>
             ))}
           </tbody>

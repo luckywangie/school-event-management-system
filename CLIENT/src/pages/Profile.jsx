@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 const Profile = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
-
+  console.log("Current user context:", currentUser);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,7 +56,7 @@ const Profile = () => {
     }
   };
 
-  if (!currentUser) {
+  if (!currentUser || !currentUser.id) {
     return <p className="text-center mt-10">Loading user data...</p>;
   }
 
@@ -110,5 +110,6 @@ const Profile = () => {
     </section>
   );
 };
+
 
 export default Profile;

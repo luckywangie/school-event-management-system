@@ -12,7 +12,7 @@ const Navbar = () => {
           School Events
         </Link>
 
-        <div className="hidden md:flex space-x-6">
+        <div className="hidden md:flex space-x-6 items-center">
           <Link
             to="/"
             className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
@@ -27,31 +27,32 @@ const Navbar = () => {
             Events
           </Link>
 
-          {currentUser ? (
+          {currentUser && (
             <>
-              {currentUser.is_admin ? (
-                <>
-                  <Link
-                    to="/users"
-                    className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
-                  >
-                    Users
-                  </Link>
-                  <Link
-                    to="/categories"
-                    className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
-                  >
-                    Categories
-                  </Link>
-                </>
-              ) : (
+              {/* ✅ Categories available to ALL logged-in users */}
+              <Link
+                to="/categories"
+                className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
+              >
+                Categories
+              </Link>
+
+              {/* ✅ Users link only for admins */}
+              {currentUser.is_admin && (
                 <Link
-                  to="/profile"
+                  to="/users"
                   className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
                 >
-                  Profile
+                  Users
                 </Link>
               )}
+
+              <Link
+                to="/profile"
+                className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
+              >
+                Profile
+              </Link>
 
               <span className="text-sm text-sky-700 font-medium ml-4">
                 {currentUser.name}
@@ -64,7 +65,9 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          ) : (
+          )}
+
+          {!currentUser && (
             <>
               <Link
                 to="/login"

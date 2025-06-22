@@ -10,12 +10,8 @@ registration_bp = Blueprint("registration_bp", __name__)
 @jwt_required()
 def create_registration():
     data = request.get_json()
-    user_id = data.get("user_id")
     event_id = data.get("event_id")
-
-    current_user_id = get_jwt_identity()
-    if current_user_id != user_id:
-        return jsonify({"error": "Unauthorized: Can't register for another user"}), 403
+    user_id = get_jwt_identity()  # ✅ Get from token instead
 
     user = User.query.get(user_id)
     event = Event.query.get(event_id)
@@ -26,18 +22,15 @@ def create_registration():
     if event.capacity and len(event.registrations) >= event.capacity:
         return jsonify({"error": "Event is at full capacity"}), 400
 
-    registration = EventRegistration(user_id=user_id, event_id=event_id)
+    # Check if already registered
+    if any(reg.user_id == user_id for reg in event.registrations):
+        return jsonify({"error": "Already registered for this event"}), 409
 
-    try:
-        db.session.add(registration)
-        db.session.commit()
-        return jsonify({
-            "success": "User registered successfully",
-            "registration_id": registration.id
-        }), 200
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({"error": "User already registered for this event"}), 409
+    registration = EventRegistration(user_id=user_id, event_id=event_id)
+    db.session.add(registration)
+    db.session.commit()
+
+    return jsonify({"success": "Registration successful"}), 200
 
 
 # CANCEL a registration 

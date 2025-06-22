@@ -29,6 +29,7 @@ const Login = () => {
       const res = await fetch('http://localhost:5000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ✅ Needed for CORS with cookies/tokens
         body: JSON.stringify(formData),
       });
 
@@ -37,17 +38,18 @@ const Login = () => {
       if (res.ok) {
         localStorage.setItem('token', data.access_token);
 
-        // Fetch user details
         const userRes = await fetch('http://localhost:5000/auth/current_user', {
           headers: {
             Authorization: `Bearer ${data.access_token}`,
           },
+          credentials: 'include', // ✅ Needed to support secure requests
         });
 
         const user = await userRes.json();
 
         if (userRes.ok) {
-          setCurrentUser(user);
+          setCurrentUser(user.user);
+          localStorage.setItem('user', JSON.stringify(user.user));
           toast.success('Login successful');
           navigate('/');
         } else {

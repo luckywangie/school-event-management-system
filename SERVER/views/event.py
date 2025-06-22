@@ -25,7 +25,9 @@ def create_event():
     capacity = data.get("capacity")
     category_id = data.get("category_id")
 
-    if not all([title, description, date_str, time_str, location, capacity, category_id]):
+    if not all(
+        [title, description, date_str, time_str, location, capacity, category_id]
+    ):
         return jsonify({"error": "All fields are required"}), 400
 
     category = Category.query.get(category_id)
@@ -33,17 +35,25 @@ def create_event():
         return jsonify({"error": "Invalid category"}), 404
 
     existing_event = Event.query.filter_by(
-        title=title, date=datetime.fromisoformat(f"{date_str}T{time_str}"), category_id=category_id
+        title=title,
+        date=datetime.fromisoformat(f"{date_str}T{time_str}"),
+        category_id=category_id,
     ).first()
 
     if existing_event:
-        return jsonify({"error": "Event already exists with the same title, date, and category"}), 400
+        return jsonify(
+            {"error": "Event already exists with the same title, date, and category"}
+        ), 400
 
     try:
         full_datetime_str = f"{date_str}T{time_str}"
         date = datetime.fromisoformat(full_datetime_str)
     except ValueError:
-        return jsonify({"error": "Invalid date or time format. Expected format: YYYY-MM-DD and HH:MM:SS"}), 400
+        return jsonify(
+            {
+                "error": "Invalid date or time format. Expected format: YYYY-MM-DD and HH:MM:SS"
+            }
+        ), 400
 
     event = Event(
         title=title,
@@ -52,25 +62,27 @@ def create_event():
         location=location,
         capacity=capacity,
         category_id=category_id,
-        created_by=user.id
+        created_by=user.id,
     )
 
     db.session.add(event)
     db.session.commit()
 
-    return jsonify({
-        "success": "Event created successfully",
-        "event": {
-            "id": event.id,
-            "title": event.title,
-            "description": event.description,
-            "date": event.date,
-            "location": event.location,
-            "capacity": event.capacity,
-            "category_id": event.category_id,
-            "created_by": event.created_by
+    return jsonify(
+        {
+            "success": "Event created successfully",
+            "event": {
+                "id": event.id,
+                "title": event.title,
+                "description": event.description,
+                "date": event.date,
+                "location": event.location,
+                "capacity": event.capacity,
+                "category_id": event.category_id,
+                "created_by": event.created_by,
+            },
         }
-    }), 200
+    ), 200
 
 
 # GET all events
@@ -84,36 +96,41 @@ def get_all_events():
             "id": e.id,
             "title": e.title,
             "description": e.description,
-            "date": e.date,
+            "date": e.date.isoformat() if e.date else None,
             "location": e.location,
             "capacity": e.capacity,
             "category_id": e.category_id,
+            "category_name": e.category.name if e.category else "Uncategorized",  # ✅ Added
             "created_by": e.created_by
         })
 
     return jsonify({"success": "Events fetched successfully", "events": event_list}), 200
-
-
 # GET event by ID
 @event_bp.route("/<int:event_id>", methods=["GET"])
 def get_event_by_id(event_id):
     event = Event.query.get(event_id)
     if not event:
         return jsonify({"error": "Event not found"}), 404
-
-    return jsonify({
-        "success": "Event fetched successfully",
-        "event": {
-            "id": event.id,
-            "title": event.title,
-            "description": event.description,
-            "date": event.date,
-            "location": event.location,
-            "capacity": event.capacity,
-            "category_id": event.category_id,
-            "created_by": event.created_by
+    category = Category.query.get(event.category_id)
+    return jsonify(
+        {
+            "success": "Event fetched successfully",
+            "event": {
+                "id": event.id,
+                "title": event.title,
+                "description": event.description,
+                "date": event.date,
+                "location": event.location,
+                "capacity": event.capacity,
+                "category": {
+                              "id": category.id,
+                              "name": category.name,
+                               "description": category.description
+                 } if category else None,
+                "created_by": event.created_by,
+            },
         }
-    }), 200
+    ), 200
 
 
 # UPDATE an event (admin only)
@@ -139,7 +156,9 @@ def update_event(event_id):
     capacity = data.get("capacity")
     category_id = data.get("category_id")
 
-    if not all([title, description, date_str, time_str, location, capacity, category_id]):
+    if not all(
+        [title, description, date_str, time_str, location, capacity, category_id]
+    ):
         return jsonify({"error": "All fields are required"}), 400
 
     category = Category.query.get(category_id)
@@ -150,7 +169,11 @@ def update_event(event_id):
         full_datetime_str = f"{date_str}T{time_str}"
         event.date = datetime.fromisoformat(full_datetime_str)
     except ValueError:
-        return jsonify({"error": "Invalid date or time format. Expected format: YYYY-MM-DD and HH:MM:SS"}), 400
+        return jsonify(
+            {
+                "error": "Invalid date or time format. Expected format: YYYY-MM-DD and HH:MM:SS"
+            }
+        ), 400
 
     event.title = title
     event.description = description
@@ -160,19 +183,21 @@ def update_event(event_id):
 
     db.session.commit()
 
-    return jsonify({
-        "success": "Event updated successfully",
-        "event": {
-            "id": event.id,
-            "title": event.title,
-            "description": event.description,
-            "date": event.date,
-            "location": event.location,
-            "capacity": event.capacity,
-            "category_id": event.category_id,
-            "created_by": event.created_by
+    return jsonify(
+        {
+            "success": "Event updated successfully",
+            "event": {
+                "id": event.id,
+                "title": event.title,
+                "description": event.description,
+                "date": event.date,
+                "location": event.location,
+                "capacity": event.capacity,
+                "category_id": event.category_id,
+                "created_by": event.created_by,
+            },
         }
-    }), 200
+    ), 200
 
 
 # DELETE an event (admin only)

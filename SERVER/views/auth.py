@@ -8,7 +8,7 @@ auth_bp = Blueprint("auth_bp", __name__)
 
 
 # Logging in
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.route("/login", methods=["POST", "OPTIONS"])  # ✅ add OPTIONS
 def login():
     data = request.get_json()
     email = data.get("email")
@@ -27,7 +27,7 @@ def login():
 
 
 # Fetching logged-in user
-@auth_bp.route("/current_user", methods=["GET"])
+@auth_bp.route("/current_user", methods=["GET", "OPTIONS"])  # ✅ add OPTIONS
 @jwt_required()
 def fetch_current_user():
     user = User.query.get(get_jwt_identity())
@@ -48,7 +48,7 @@ def fetch_current_user():
 
 
 # Logout
-@auth_bp.route("/logout", methods=["DELETE"])
+@auth_bp.route("/logout", methods=["DELETE", "OPTIONS"])  # ✅ add OPTIONS
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]

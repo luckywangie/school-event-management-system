@@ -16,6 +16,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+   
+
     # Relationships
     created_events = db.relationship(
         'Event',
