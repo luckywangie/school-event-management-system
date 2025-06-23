@@ -5,7 +5,7 @@ import config from '../config.json';
 
 
 const EventParticipants = () => {
-  const { id } = useParams(); // Event ID from URL
+  const { id } = useParams(); 
   const [participants, setParticipants] = useState([]);
   const [eventTitle, setEventTitle] = useState('');
   const [loading, setLoading] = useState(true);

@@ -18,7 +18,6 @@ import Contact from './pages/Contacts';
 function App() {
   return (
     <Routes>
-      {/* ✅ Layout wraps all routes */}
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -31,7 +30,6 @@ function App() {
         <Route path="/register-event" element={<EventRegistration />} />
         <Route path="/events/:id/participants" element={<EventParticipants />} />
 
-        {/* ℹ️ Informational pages */}
         <Route path="/about" element={<About />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/help" element={<Help />} />

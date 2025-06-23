@@ -45,4 +45,4 @@ const EventRegistration = () => {
   );
 };
 
-export default EventRegistration; // ✅ THIS LINE IS REQUIRED
+export default EventRegistration; // 

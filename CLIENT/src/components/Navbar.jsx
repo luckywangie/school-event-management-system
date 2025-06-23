@@ -31,7 +31,7 @@ const Navbar = () => {
 
           {currentUser && (
             <>
-              {/* ✅ Categories available to ALL logged-in users */}
+              {/* Categories available to ALL logged-in users */}
               <Link
                 to="/categories"
                 className="text-gray-700 hover:text-sky-700 dark:text-white md:p-0"
@@ -39,7 +39,7 @@ const Navbar = () => {
                 Categories
               </Link>
 
-              {/* ✅ Users link only for admins */}
+              {/* Users link only for admins */}
               {currentUser.is_admin && (
                 <Link
                   to="/users"

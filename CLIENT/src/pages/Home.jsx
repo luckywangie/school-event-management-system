@@ -23,7 +23,7 @@ const Home = () => {
           to="/events"
           className="px-6 py-3 bg-sky-600 text-white font-semibold rounded-xl hover:bg-sky-700 transition duration-200 shadow"
         >
-          🎉 Browse Events
+          Browse Events
         </Link>
 
         {!currentUser && (
@@ -32,13 +32,13 @@ const Home = () => {
               to="/login"
               className="px-6 py-3 bg-gray-300 text-gray-800 font-semibold rounded-xl hover:bg-gray-400 transition duration-200 shadow"
             >
-              🔐 Login
+              Login
             </Link>
             <Link
               to="/register"
               className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition duration-200 shadow"
             >
-              📝 Register
+               Register
             </Link>
           </>
         )}
@@ -48,7 +48,7 @@ const Home = () => {
             to="/profile"
             className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition duration-200 shadow"
           >
-            🙍 Go to Profile
+             Go to Profile
           </Link>
         )}
       </div>

@@ -10,7 +10,7 @@ const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
-  // Load user from localStorage on first mount
+  
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -18,7 +18,7 @@ const UserProvider = ({ children }) => {
     }
   }, []);
 
-  // Sync user state to localStorage
+  
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('user', JSON.stringify(currentUser));
@@ -27,7 +27,7 @@ const UserProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  // ✅ LOGOUT function
+  //  LOGOUT function
   const logout_user = async () => {
     const token = localStorage.getItem('token');
 
