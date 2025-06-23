@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const Register = () => {
   const { setCurrentUser } = useContext(UserContext);
@@ -27,7 +29,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/users/', {
+      const res = await fetch(`${config.api_url}/users/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

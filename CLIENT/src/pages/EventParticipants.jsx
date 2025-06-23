@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const EventParticipants = () => {
   const { id } = useParams(); // Event ID from URL
@@ -13,7 +15,7 @@ const EventParticipants = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const res = await fetch(`http://localhost:5000/registrations/events/${id}`, {
+     const res = await fetch(`${config.api_url}/registrations/events/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

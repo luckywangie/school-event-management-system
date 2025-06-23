@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -7,7 +9,7 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/users', {
+      const res = await fetch(`${config.api_url}/users/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -30,7 +32,7 @@ const Users = () => {
   const toggleAdmin = async (userId, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/users/${userId}`, {
+      const res = await fetch(`${config.api_url}/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +58,7 @@ const Users = () => {
   const toggleActive = async (userId, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/users/${userId}`, {
+      const res = await fetch(`${config.api_url}/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

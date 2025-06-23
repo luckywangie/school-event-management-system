@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const Events = () => {
   const { currentUser } = useContext(UserContext);
@@ -25,7 +27,7 @@ const Events = () => {
 
   const fetchEvents = () => {
     setLoading(true);
-    fetch('http://localhost:5000/events')
+    fetch(`${config.api_url}/events/`)
       .then((res) => res.json())
       .then((data) => {
         if (data.events) setEvents(data.events);
@@ -35,7 +37,7 @@ const Events = () => {
   };
 
   const fetchCategories = async () => {
-    const res = await fetch('http://localhost:5000/categories');
+    const res = await fetch(`${config.api_url}/categories`);
     const data = await res.json();
     setCategories(data.categories || []);
   };
@@ -45,7 +47,7 @@ const Events = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch(`http://localhost:5000/registrations/users/${currentUser.id}`, {
+      const res = await fetch(`${config.api_url}/registrations/users/${currentUser.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -84,7 +86,7 @@ const Events = () => {
       category_id: parseInt(newEvent.category_id, 10),
     };
 
-    const res = await fetch('http://localhost:5000/events', {
+    const res = await fetch(`${config.api_url}/events/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,7 +115,7 @@ const Events = () => {
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:5000/events/${id}`, {
+    const res = await fetch(`${config.api_url}/events/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -162,7 +164,7 @@ const Events = () => {
     };
 
     try {
-      const res = await fetch(`http://localhost:5000/events/${editEventId}`, {
+      const res = await fetch(`${config.api_url}/events/${editEventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

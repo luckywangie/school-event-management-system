@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 export const UserContext = createContext();
 
@@ -30,7 +32,8 @@ const UserProvider = ({ children }) => {
     const token = localStorage.getItem('token');
 
     try {
-      await fetch('http://localhost:5000/auth/logout', {
+      await fetch(`${config.api_url}/auth/logout`, {
+
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

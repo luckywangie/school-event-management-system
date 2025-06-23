@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const Login = () => {
   const { setCurrentUser } = useContext(UserContext);
@@ -26,7 +28,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/auth/login', {
+      const res = await fetch(`${config.api_url}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -38,7 +40,7 @@ const Login = () => {
       if (res.ok) {
         localStorage.setItem('token', data.access_token);
 
-        const userRes = await fetch('http://localhost:5000/auth/current_user', {
+        const userRes = await fetch(`${config.api_url}/auth/current_user`, {
           headers: {
             Authorization: `Bearer ${data.access_token}`,
           },

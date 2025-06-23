@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -11,7 +13,7 @@ const EventDetails = () => {
   const [registering, setRegistering] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/events/${id}`)
+    fetch(`${config.api_url}/events/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error('Event not found');
         return res.json();
@@ -34,7 +36,7 @@ const EventDetails = () => {
 
     setRegistering(true);
     try {
-      const res = await fetch('http://localhost:5000/registrations/', {
+     const res = await fetch(`${config.api_url}/registrations/events/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

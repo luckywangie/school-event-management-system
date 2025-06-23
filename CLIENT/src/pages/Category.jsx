@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { UserContext } from '../context/UserContext';
+import config from '../config.json';
+
 
 const Categories = () => {
   const { currentUser } = useContext(UserContext);
@@ -11,7 +13,7 @@ const Categories = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://localhost:5000/categories/');
+      const res = await fetch(`${config.api_url}/categories/`);
       const data = await res.json();
 
       if (res.ok) {
@@ -34,7 +36,7 @@ const Categories = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch('http://localhost:5000/categories/', {
+      const res = await fetch(`${config.api_url}/categories/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +64,7 @@ const Categories = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch(`http://localhost:5000/categories/${id}`, {
+      const res = await fetch(`${config.api_url}/categories/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -89,7 +91,7 @@ const Categories = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch(`http://localhost:5000/categories/${editCategoryId}`, {
+      const res = await fetch(`${config.api_url}/categories/${editCategoryId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

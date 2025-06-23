@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const Profile = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
@@ -34,7 +36,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/users/${currentUser.id}`, {
+      const res = await fetch(`${config.api_url}/users/${currentUser.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

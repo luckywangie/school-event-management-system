@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import config from '../config.json';
+
 
 const Home = () => {
   const { currentUser } = useContext(UserContext);

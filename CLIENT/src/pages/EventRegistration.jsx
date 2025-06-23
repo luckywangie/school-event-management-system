@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import config from '../config.json';
+
 
 const EventRegistration = () => {
   const [registrations, setRegistrations] = useState([]);
