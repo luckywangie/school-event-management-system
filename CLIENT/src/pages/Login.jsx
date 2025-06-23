@@ -29,7 +29,7 @@ const Login = () => {
       const res = await fetch('http://localhost:5000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // ✅ Needed for CORS with cookies/tokens
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -42,7 +42,7 @@ const Login = () => {
           headers: {
             Authorization: `Bearer ${data.access_token}`,
           },
-          credentials: 'include', // ✅ Needed to support secure requests
+          credentials: 'include',
         });
 
         const user = await userRes.json();
@@ -67,15 +67,18 @@ const Login = () => {
   };
 
   return (
-    <section className="max-w-md mx-auto p-6 mt-10 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-      <form onSubmit={handleLogin} className="space-y-4">
+    <section className="max-w-xl mx-auto p-8 mt-16 bg-white rounded-xl shadow-lg animate-fade-in">
+      <h2 className="text-3xl font-extrabold text-sky-700 text-center mb-8 drop-shadow-sm">
+        Login
+      </h2>
+
+      <form onSubmit={handleLogin} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium">Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
             type="email"
             name="email"
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
             value={formData.email}
             onChange={handleChange}
             required
@@ -83,11 +86,11 @@ const Login = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Password</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
           <input
             type="password"
             name="password"
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
             value={formData.password}
             onChange={handleChange}
             required
@@ -97,7 +100,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 bg-sky-600 text-white rounded hover:bg-sky-700"
+          className="w-full py-3 bg-sky-600 text-white font-semibold rounded-xl hover:bg-sky-700 transition duration-200 shadow"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
