@@ -15,7 +15,7 @@ from views.auth import auth_bp
 app = Flask(__name__)
 
 # === DB CONFIG ===
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sems_db_user:JpjV6MiZnhuoJCxfSbJxL6OpAquzYdY6@dpg-d1ckljp5pdvs73evmd1g-a.oregon-postgres.render.com/sems_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # === MAIL CONFIG ===
