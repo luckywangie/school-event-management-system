@@ -9,6 +9,10 @@ flask-jwt-extended = "*"
 werkzeug = "*"
 flask-cors = "*"
 flask-migrate = "*"
+psycopg2-binary = "*"
+gunicorn = "*"
+flask = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 
