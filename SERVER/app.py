@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask
 from flask_migrate import Migrate
 from flask_mail import Mail
 from flask_cors import CORS
@@ -34,20 +34,13 @@ app.config["JWT_BLACKLIST_ENABLED"] = True
 app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = ["access"]
 app.config["JWT_VERIFY_SUB"] = False  # Optional: testing config
 
-# === CORS CONFIG (Fix for React frontend with JWT) ===
+# === CORS CONFIG (FIXED) ===
 CORS(app,
-     resources={r"/*": {"origins": "http://localhost:5173"}},
-     supports_credentials=True,
-     headers=["Content-Type", "Authorization"],  # ✅ use `headers=` not `allow_headers=`
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-)
-
-
-# Optional: Automatically respond to preflight OPTIONS
-@app.before_request
-def handle_options():
-    if request.method == 'OPTIONS':
-        return '', 200
+     origins=[
+         "http://localhost:5173",
+         "https://tourmaline-sunflower-d5ba58.netlify.app"
+     ],
+     supports_credentials=True)
 
 # === INIT EXTENSIONS ===
 db.init_app(app)
