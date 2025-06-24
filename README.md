@@ -41,8 +41,8 @@ This is a web-based event management platform tailored for school environments. 
 
 
 ## Deployment
-* You can view the frontend live on [Stack overflow frontend]()
-* You can view the flask backend here [Stack overflow backend]()
+* You can view the frontend live on [Event Management System frontend](https://tourmaline-sunflower-d5ba58.netlify.app/)
+* You can view the flask backend here [Event Management System backend](https://school-event-management-system.onrender.com)
 
 ## Known Bugs
 The application works perfectly well, no bugs.
