@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import config from '../config.json';
 
 
+
 const Events = () => {
   const { currentUser } = useContext(UserContext);
   const [events, setEvents] = useState([]);

@@ -36,14 +36,13 @@ const EventDetails = () => {
 
     setRegistering(true);
     try {
-     const res = await fetch(`${config.api_url}/registrations/events/${id}`, {
+      const res = await fetch(`${config.api_url}/registrations/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
-          user_id: currentUser.id,
           event_id: event.id,
         }),
       });
