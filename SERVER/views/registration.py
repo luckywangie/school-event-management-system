@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, User, Event, EventRegistration
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError  # noqa: F401
 
 registration_bp = Blueprint("registration_bp", __name__)
 

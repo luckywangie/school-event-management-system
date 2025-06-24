@@ -1,14 +1,19 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+from flask_cors import cross_origin
 from models import db, User, TokenBlocklist
 from datetime import datetime, timezone
 
 auth_bp = Blueprint("auth_bp", __name__)
 
-# Logging in
+# === LOGIN ===
 @auth_bp.route("/login", methods=["POST", "OPTIONS"])
+@cross_origin(origins=["https://tourmaline-sunflower-d5ba58.netlify.app"], supports_credentials=True)
 def login():
+    if request.method == "OPTIONS":
+        return '', 200  # ✅ Let preflight pass with 200 OK
+
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
@@ -26,9 +31,11 @@ def login():
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
-# Fetching logged-in user
+
+# === FETCH CURRENT USER ===
 @auth_bp.route("/current_user", methods=["GET", "OPTIONS"])
 @jwt_required()
+@cross_origin(origins=["https://tourmaline-sunflower-d5ba58.netlify.app"], supports_credentials=True)
 def fetch_current_user():
     user = User.query.get(get_jwt_identity())
     if not user:
@@ -46,10 +53,15 @@ def fetch_current_user():
         }
     }), 200
 
-# Logout
+
+# === LOGOUT ===
 @auth_bp.route("/logout", methods=["DELETE", "OPTIONS"])
 @jwt_required()
+@cross_origin(origins=["https://tourmaline-sunflower-d5ba58.netlify.app"], supports_credentials=True)
 def logout():
+    if request.method == "OPTIONS":
+        return '', 200
+
     jti = get_jwt()["jti"]
     now = datetime.now(timezone.utc)
 
