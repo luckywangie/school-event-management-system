@@ -10,7 +10,6 @@ This is a web-based event management platform tailored for school environments. 
 - Log in with secure credentials.
 - Edit profile (name, email, password).
 - Browse all upcoming events.
-- Search/filter events by title or category.
 - View individual event details.
 - Register for events of interest.
 - Cancel event registrations.
